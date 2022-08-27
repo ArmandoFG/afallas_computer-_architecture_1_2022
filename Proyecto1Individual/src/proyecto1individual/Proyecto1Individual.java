@@ -14,8 +14,13 @@ public class Proyecto1Individual {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+<<<<<<< HEAD
         Imagen img = new Imagen();
         img.pixelesImagen();
+=======
+        //Imagen img = new Imagen();
+        //img.pixelesImagen();
+>>>>>>> Interfaz
     }
     
 }

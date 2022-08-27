@@ -25,6 +25,13 @@ public class UI extends javax.swing.JFrame {
      * Creates new form UI
      */
     Imagen img = new Imagen();
+<<<<<<< HEAD
+=======
+    int x_init;
+    int y_init;
+    int x_end;
+    int y_end;
+>>>>>>> Interfaz
     
     public UI() {
         initComponents();
@@ -56,6 +63,10 @@ public class UI extends javax.swing.JFrame {
         Op3 = new javax.swing.JLabel();
         Op2 = new javax.swing.JLabel();
         Op1 = new javax.swing.JLabel();
+<<<<<<< HEAD
+=======
+        jButton2 = new javax.swing.JButton();
+>>>>>>> Interfaz
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -212,6 +223,22 @@ public class UI extends javax.swing.JFrame {
         getContentPane().add(Op1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 160, 100, 100));
         Op1.getAccessibleContext().setAccessibleName("Op1");
 
+<<<<<<< HEAD
+=======
+        jButton2.setBackground(new java.awt.Color(0, 153, 153));
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
+        jButton2.setText("Zoom");
+        jButton2.setEnabled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 620, 110, 40));
+        jButton2.getAccessibleContext().setAccessibleName("Zoom");
+
+>>>>>>> Interfaz
         jButton1.setBackground(new java.awt.Color(0, 153, 153));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
@@ -260,7 +287,10 @@ public class UI extends javax.swing.JFrame {
                 jLabel2.setIcon(icono);
                 
                 
+<<<<<<< HEAD
                 img.pixelesImagen();
+=======
+>>>>>>> Interfaz
                 
             }catch(Exception ex){
                 JOptionPane.showMessageDialog(null, "Error al abrir");
@@ -274,7 +304,12 @@ public class UI extends javax.swing.JFrame {
     private void OpcionesIMG(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_OpcionesIMG
                 
         
+<<<<<<< HEAD
         if(img.image!=null){
+=======
+        if(imagen!=null){
+            jButton2.setEnabled(true);
+>>>>>>> Interfaz
             JLabel item = (JLabel) evt.getSource();
             item.setHorizontalAlignment(JLabel.CENTER);
             ImageIcon ImgIcon = new ImageIcon(getClass().getResource("/proyecto1individual/Imagenes/correct.png"));
@@ -285,9 +320,112 @@ public class UI extends javax.swing.JFrame {
             }
             item.setIcon(icono);
             JlabelAntiguo = (JLabel) evt.getSource();
+<<<<<<< HEAD
         }
     }//GEN-LAST:event_OpcionesIMG
     
+=======
+            CambiarSeleccion(item.getAccessibleContext().getAccessibleName());
+        }
+    }//GEN-LAST:event_OpcionesIMG
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+            img.pixelesImagen(imagen.getAbsolutePath(), x_init, y_init, x_end, y_end);
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+    
+    private void CambiarSeleccion(String Selector){
+        if(Selector.equals("Op1")){
+            x_init=0;
+            y_init=0;
+            x_end=100;
+            y_end=100;
+        }else if(Selector.equals("Op2")){
+            x_init=100;
+            y_init=0;
+            x_end=200;
+            y_end=100;
+        }else if(Selector.equals("Op3")){
+            x_init=200;
+            y_init=0;
+            x_end=300;
+            y_end=100;
+        }else if(Selector.equals("Op4")){
+            x_init=300;
+            y_init=0;
+            x_end=400;
+            y_end=100;
+        }else if(Selector.equals("Op5")){
+            x_init=0;
+            y_init=100;
+            x_end=100;
+            y_end=200;
+        }else if(Selector.equals("Op6")){
+            x_init=100;
+            y_init=100;
+            x_end=200;
+            y_end=200;
+        }else if(Selector.equals("Op7")){
+            x_init=200;
+            y_init=100;
+            x_end=300;
+            y_end=200;
+        }else if(Selector.equals("Op8")){
+            x_init=300;
+            y_init=100;
+            x_end=400;
+            y_end=200;
+        }else if(Selector.equals("Op9")){
+            x_init=0;
+            y_init=200;
+            x_end=100;
+            y_end=300;
+        }else if(Selector.equals("Op10")){
+            x_init=100;
+            y_init=200;
+            x_end=200;
+            y_end=300;
+        }else if(Selector.equals("Op11")){
+            x_init=200;
+            y_init=200;
+            x_end=300;
+            y_end=300;
+        }else if(Selector.equals("Op12")){
+            x_init=300;
+            y_init=200;
+            x_end=400;
+            y_end=300;
+        }else if(Selector.equals("Op12")){
+            x_init=300;
+            y_init=200;
+            x_end=400;
+            y_end=300;
+        }else if(Selector.equals("Op13")){
+            x_init=0;
+            y_init=300;
+            x_end=100;
+            y_end=400;
+        }else if(Selector.equals("Op14")){
+            x_init=100;
+            y_init=300;
+            x_end=200;
+            y_end=400;
+        }else if(Selector.equals("Op15")){
+            x_init=200;
+            y_init=300;
+            x_end=300;
+            y_end=400;
+        }else if(Selector.equals("Op16")){
+            x_init=300;
+            y_init=300;
+            x_end=400;
+            y_end=400;
+        }
+        
+       
+    }
+            
+>>>>>>> Interfaz
    
     /**
      * @param args the command line arguments
@@ -345,6 +483,10 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JLabel Op8;
     private javax.swing.JLabel Op9;
     private javax.swing.JButton jButton1;
+<<<<<<< HEAD
+=======
+    private javax.swing.JButton jButton2;
+>>>>>>> Interfaz
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
