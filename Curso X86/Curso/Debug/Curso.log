@@ -1,0 +1,4 @@
+﻿  Assembling Main.asm...
+/masm32/include/masm32rt.inc(33): warning A4011: multiple .MODEL directives found : .MODEL ignored
+Main.obj : warning LNK4258: la directiva '/ENTRY:start@0' no es compatible con el modificador '/ENTRY:start'; se ha omitido
+  Curso.vcxproj -> C:\Users\arman\Documents\Curso X86\Curso\Debug\Curso.exe

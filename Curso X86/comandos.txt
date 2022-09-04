@@ -1,0 +1,5 @@
+cd C:\Users\arman\Documents\Curso X86
+
+nasm -fwin32 curso.asm
+
+gcc curso.obj -o curso.exe
