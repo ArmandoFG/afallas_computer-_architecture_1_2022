@@ -30,6 +30,10 @@ include /masm32/include/masm32rt.inc
 
     VarX DWORD 0
 
+    pruebita DWORD 0
+
+    dataSize dword 65535
+
 
 .data?
     hFile HANDLE ?
@@ -47,6 +51,8 @@ include /masm32/include/masm32rt.inc
     Px DWORD ?
     Py DWORD ?
     
+    StrMemory DWORD ?
+    sihMemory HANDLE ?
 
     val1 DWORD ?
 
@@ -55,23 +61,26 @@ include /masm32/include/masm32rt.inc
     valG DWORD ?
     valJ DWORD ?
 
-    
+    PtrStr DWORD ?
 
+    
 
 
 .const
     MEMORYSIZE equ 65535
     MEMORYSIZE2 equ 65535
+    MEMORYSIZE3 equ 65535
 
 .code
 
 start PROC
+    
+    
 	
     invoke CreateFile, addr FileName, GENERIC_READ, FILE_SHARE_READ,
     NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL
     .if eax != INVALID_HANDLE_VALUE
     mov hFile, eax
-
 
     invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE
     mov hMemory, eax
@@ -83,9 +92,15 @@ start PROC
     invoke GlobalLock, ihMemory
     mov NewMemory, eax
 
+    invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE3
+    mov sihMemory, eax
+    invoke GlobalLock, sihMemory
+    mov StrMemory, eax
+
  
     
     invoke ReadFile, hFile, pMemory, MEMORYSIZE - 1, addr ReadSize, NULL
+
 
     mov contador, 0
     mov contadorInt, 0
@@ -93,8 +108,10 @@ start PROC
     mov eax, pMemory
     sub eax, 1
     
-
-   
+    
+  
+    
+    
     jmp ConvertToInt
 
     invoke MessageBox, NULL, pMemory, addr FileName, MB_OK
@@ -251,7 +268,7 @@ Calc_a:
     mov Py, edi
     add Punt1, 1
     mov esi, Punt1
-    mov byte ptr[ebx + esi], 32
+    mov byte ptr[ebx + esi], ' '
     add Punt1, 1
     mov esi, Punt1
         
@@ -270,7 +287,7 @@ Calc_a:
     movzx eax, byte ptr[ebx + esi]
     add Punt1, 1
     mov esi, Punt1
-    mov byte ptr[ebx + esi], 32
+    mov byte ptr[ebx + esi], ' '
     finit
     jmp Calc_b
     
@@ -295,14 +312,14 @@ Calc_b:
     mov byte ptr[ebx + esi], al
     add Punt1, 1
     mov esi, Punt1
-    mov byte ptr[ebx + esi], 32
+    mov byte ptr[ebx + esi], ' '
     add Punt1, 1
     mov esi, Punt1
     movzx eax, byte ptr[ecx + edx+1]
     mov byte ptr[ebx + esi], al
     add Punt1, 1
     mov esi, Punt1
-    mov byte ptr[ebx + esi], 32
+    mov byte ptr[ebx + esi], ' '
     movzx eax, byte ptr[ebx]
     movzx eax, byte ptr[ebx + 1]
     movzx eax, byte ptr[ebx + 2]
@@ -556,11 +573,144 @@ Calc_i:
     jmp InicioCiclo
 
 Fin:
-    mov edi, VarX
+    
+    mov PtrStr, -1
+    mov edi, Punt4
+    
+    jmp IntoString
+    
     movzx eax, byte ptr[ebx + edi]
-    add VarX, 1
     
     jmp Fin
+
+IntoString:
+    mov esi, PtrStr
+    mov eax, StrMemory
+    add eax, MEMORYSIZE3-1
+    
+    add StrMemory, MEMORYSIZE3 - 1
+    sub StrMemory, edi
+
+    jmp BuscarEspacio
+
+BuscarEspacio:
+    sub edi, 1
+    add esi, 1
+    movzx ecx, byte ptr[ebx + edi]
+    cmp edi, -1
+    je Write
+    cmp ecx, ' '
+    je ConDigitos
+    jmp BuscarEspacio
+
+ConDigitos:
+    cmp esi, 0
+    je BuscarEspacio
+    
+    cmp byte ptr[ebx + edi+1], 99
+    jg Digitos3
+    cmp byte ptr[ebx + edi+1], 9
+    jg Digitos2
+    jmp Digitos1
+
+Digitos3:
+    mov esi, -1
+    mov ebp, eax
+    movzx eax, byte ptr[ebx + edi + 1]
+    mov edx, 0
+    mov ecx, 10
+    idiv ecx
+    mov ecx, eax
+    add edx, 48
+    mov eax, ebp
+    mov byte ptr[eax], dl
+    sub eax, 1
+    mov ebp, eax
+    mov eax, ecx
+    mov edx, 0
+    mov ecx, 10
+    idiv ecx
+    mov ecx, eax
+    add edx, 48
+    mov eax, ebp
+    mov byte ptr[eax], dl
+    sub eax, 1
+    add ecx, 48
+    mov byte ptr[eax], cl
+    sub eax, 1
+    mov byte ptr[eax], ' '
+    sub eax, 1
+    jmp BuscarEspacio
+
+
+Digitos2:
+    mov esi, -1
+    mov ebp, eax
+    movzx eax, byte ptr[ebx + edi + 1]
+    mov edx, 0
+    mov ecx, 10
+    idiv ecx
+    mov ecx, eax
+    add edx, 48
+    mov eax, ebp
+    mov byte ptr[eax], dl
+    sub eax, 1
+    add ecx, 48
+    mov byte ptr[eax], cl
+    sub eax, 1
+    mov byte ptr[eax], ' '
+    sub eax, 1
+    jmp BuscarEspacio
+
+Digitos1:
+    mov esi, -1
+    movzx ecx, byte ptr[ebx + edi + 1]
+    add ecx, 48
+    mov byte ptr[eax], cl
+    sub eax,1
+    mov byte ptr[eax], ' '
+    sub eax,1
+    jmp BuscarEspacio
+
+
+prueba:
+    
+    mov esi, pruebita
+    movzx ebx, byte ptr[eax+ esi]
+    add pruebita, 1
+    jmp prueba
+
+Write:
+    add eax, 1
+    mov StrMemory, eax
+    mov eax, StrMemory
+    
+    invoke CreateFile, addr FileNameDest, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL
+    cmp eax, INVALID_HANDLE_VALUE
+    je openFail
+    push ebx
+    mov ebx, eax
+
+    sub esp, 4
+    mov edx, esp
+    invoke WriteFile, ebx, StrMemory, 200, edx, 0
+    add esp, 4
+    test eax, eax
+    jz fail
+
+ok:
+    invoke CloseHandle, ebx
+    xor eax,eax
+
+done:
+    pop ebx
+    ret
+
+fail:
+    invoke  CloseHandle, ebx
+
+openFail:
+    mov eax, -1
    
     
     
