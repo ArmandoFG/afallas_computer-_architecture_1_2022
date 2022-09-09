@@ -23,9 +23,9 @@ include /masm32/include/masm32rt.inc
 
 
     Punt1 DWORD 0
-    Punt2 DWORD 32
-    Punt3 DWORD 64
-    Punt4 DWORD 96
+    Punt2 DWORD 792
+    Punt3 DWORD 1584
+    Punt4 DWORD 2376
     Pivote DWORD 0
 
     VarX DWORD 0
@@ -40,6 +40,9 @@ include /masm32/include/masm32rt.inc
     ihFile HANDLE ?
     hMemory HANDLE ?
     ihMemory HANDLE ?
+    enteroMemory HANDLE ?
+
+
     pMemory DWORD ?
     ReadSize DWORD ?
     IMemory DWORD ?
@@ -69,9 +72,9 @@ include /masm32/include/masm32rt.inc
 
 
 .const
-    MEMORYSIZE equ 65535
-    MEMORYSIZE2 equ 65535
-    MEMORYSIZE3 equ 65535
+    MEMORYSIZE equ 300000
+    MEMORYSIZE2 equ 350000
+    MEMORYSIZE3 equ 700000
 
 .code
 
@@ -90,6 +93,11 @@ start PROC
     mov pMemory, eax
 
     invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE2
+    mov enteroMemory, eax
+    invoke GlobalLock, enteroMemory
+    mov IMemory, eax
+
+    invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE2
     mov ihMemory, eax
     invoke GlobalLock, ihMemory
     mov NewMemory, eax
@@ -99,6 +107,8 @@ start PROC
     invoke GlobalLock, sihMemory
     mov StrMemory, eax
 
+    
+
  
     
     invoke ReadFile, hFile, pMemory, MEMORYSIZE - 1, addr ReadSize, NULL
@@ -106,7 +116,7 @@ start PROC
 
     mov contador, 0
     mov contadorInt, 0
-    mov IMemory, esp
+    ;mov IMemory, esp
     mov eax, pMemory
     sub eax, 1
 
@@ -231,7 +241,7 @@ IniciarAlgoritmo:
     ;mov eax, offset NewMemory
     ;mov NewMemory, eax
     mov Px, 0
-    mov Py, 5
+    mov Py, 100
 
     mov ebx, NewMemory
 
@@ -244,18 +254,18 @@ InicioCiclo:
 
     add Pivote, 1
    
-    cmp Py, 25
+    cmp Py, 10000
     je Fin
-    cmp Pivote, 5
+    cmp Pivote, 100
     je MoverPunteros
     
     jmp Calc_a
 
 MoverPunteros:
-    add Punt1, 96
-    add Punt2, 96
-    add Punt3, 96
-    add Punt4, 96
+    add Punt1, 2376
+    add Punt2, 2376
+    add Punt3, 2376
+    add Punt4, 2376
     mov Pivote, 0
     jmp Calc_a
    
@@ -322,6 +332,7 @@ Calc_b:
     add Punt1, 1
     mov esi, Punt1
     mov byte ptr[ebx + esi], ' '
+
     movzx eax, byte ptr[ebx]
     movzx eax, byte ptr[ebx + 1]
     movzx eax, byte ptr[ebx + 2]
@@ -704,7 +715,7 @@ Write:
 
     sub esp, 4
     mov edx, esp
-    invoke WriteFile, ebx, StrMemory, 856, edx, 0
+    invoke WriteFile, ebx, StrMemory, 528500, edx, 0
     add esp, 4
     test eax, eax
     jz fail
