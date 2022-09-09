@@ -63,6 +63,8 @@ include /masm32/include/masm32rt.inc
 
     PtrStr DWORD ?
 
+    SizeEnd DWORD ?
+
     
 
 
@@ -107,7 +109,7 @@ start PROC
     mov IMemory, esp
     mov eax, pMemory
     sub eax, 1
-    
+
     
   
     
@@ -576,6 +578,7 @@ Fin:
     
     mov PtrStr, -1
     mov edi, Punt4
+    mov SizeEnd, edi
     
     jmp IntoString
     
@@ -597,17 +600,24 @@ BuscarEspacio:
     sub edi, 1
     add esi, 1
     movzx ecx, byte ptr[ebx + edi]
+    cmp edi, 3
+    je salto
     cmp edi, -1
     je Write
     cmp ecx, ' '
     je ConDigitos
+    cmp ecx, 0
+    je ConDigitos
     jmp BuscarEspacio
+
+salto:
+    jmp ConDigitos
 
 ConDigitos:
     cmp esi, 0
     je BuscarEspacio
-    
-    cmp byte ptr[ebx + edi+1], 99
+    movzx ebp, byte ptr[ebx + edi + 1]
+    cmp ebp, 99
     jg Digitos3
     cmp byte ptr[ebx + edi+1], 9
     jg Digitos2
@@ -681,7 +691,8 @@ prueba:
     jmp prueba
 
 Write:
-    add eax, 1
+   
+    add eax, 2
     mov StrMemory, eax
     mov eax, StrMemory
     
@@ -693,7 +704,7 @@ Write:
 
     sub esp, 4
     mov edx, esp
-    invoke WriteFile, ebx, StrMemory, 200, edx, 0
+    invoke WriteFile, ebx, StrMemory, 856, edx, 0
     add esp, 4
     test eax, eax
     jz fail
