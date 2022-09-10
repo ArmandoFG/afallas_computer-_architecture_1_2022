@@ -23,9 +23,9 @@ include /masm32/include/masm32rt.inc
 
 
     Punt1 DWORD 0
-    Punt2 DWORD 792
-    Punt3 DWORD 1584
-    Punt4 DWORD 2376
+    Punt2 DWORD 596
+    Punt3 DWORD 1192
+    Punt4 DWORD 1788
     Pivote DWORD 0
 
     VarX DWORD 0
@@ -170,7 +170,10 @@ Conver1Digit:
     mov ebx, IMemory
     add ebx, 1
     mov IMemory, ebx
+    mov pMemory, eax
     mov ecx, IMemory
+    mov bl, byte ptr[eax-1]
+    sub ebx, 48
     mov byte ptr[ecx],bl
     mov contador, 0
     cmp byte ptr[eax], 36
@@ -262,11 +265,15 @@ InicioCiclo:
     jmp Calc_a
 
 MoverPunteros:
-    add Punt1, 2376
-    add Punt2, 2376
-    add Punt3, 2376
-    add Punt4, 2376
+    add Px, 1
+    add Py, 1
+   
+    add Punt1, 1192
+    add Punt2, 1192
+    add Punt3, 1192
+    add Punt4, 1192
     mov Pivote, 0
+    add Pivote, 1
     jmp Calc_a
    
 Calc_a:
@@ -307,43 +314,57 @@ Calc_a:
 Calc_b:
     
     mov edx, Px
-    add Punt1, 1
-    mov edi, Px
-    mov esi, Punt1
-    fld a2
-    movzx eax, byte ptr[ecx+edx]
-    mov val1, eax
-    fimul val1
-    fld a1
-    movzx eax, byte ptr[ecx + edx+1]
-    mov val1, eax
-    fimul val1
-    fadd st, st(1)
-    fist val1
-    mov eax, val1
-    mov byte ptr[ebx + esi], al
-    add Punt1, 1
-    mov esi, Punt1
-    mov byte ptr[ebx + esi], ' '
-    add Punt1, 1
-    mov esi, Punt1
-    movzx eax, byte ptr[ecx + edx+1]
-    mov byte ptr[ebx + esi], al
-    add Punt1, 1
-    mov esi, Punt1
-    mov byte ptr[ebx + esi], ' '
+        add Punt1, 1
+        mov edi, Px
+        mov esi, Punt1
+        fld a2
+        movzx eax, byte ptr[ecx + edx]
+        mov val1, eax
+        fimul val1
+        fld a1
+        movzx eax, byte ptr[ecx + edx + 1]
+        mov val1, eax
+        fimul val1
+        fadd st, st(1)
+        fist val1
+        mov eax, val1
+        mov byte ptr[ebx + esi], al
+        add Punt1, 1
+        mov esi, Punt1
+        mov byte ptr[ebx + esi], ' '
 
-    movzx eax, byte ptr[ebx]
-    movzx eax, byte ptr[ebx + 1]
-    movzx eax, byte ptr[ebx + 2]
-    movzx eax, byte ptr[ebx+3]
-    movzx eax, byte ptr[ebx + 4]
-    movzx eax, byte ptr[ebx + 5]
+        cmp Pivote, 99
+        je PonerUltimoValor
+
+        ;add Punt1, 1
+        ;mov esi, Punt1
+        ;movzx eax, byte ptr[ecx + edx + 1]
+        ;mov byte ptr[ebx + esi], al
+        ;add Punt1, 1
+        ;mov esi, Punt1
+        ;mov byte ptr[ebx + esi], ' '
+
+    
+
+        mov Px, edi
+        finit
+    
+    
+        jmp Calc_c
+
+PonerUltimoValor:
+    add Punt1, 1
+    mov esi, Punt1
+    movzx eax, byte ptr[ecx + edx + 1]
+    mov byte ptr[ebx + esi], al
+    add Punt1, 1
+    mov esi, Punt1
+    mov byte ptr[ebx + esi], ' '
 
     mov Px, edi
     finit
     
-    ;jmp Fin
+    
     jmp Calc_c
    
 
@@ -404,7 +425,9 @@ Calc_k:
     add Punt4, 1
     movzx eax, byte ptr[ecx + edx]
     mov esi, Punt4
+    mov edi, Py
     mov byte ptr[ebx + esi], al
+    mov Py, edi
     add Punt4, 1
     mov esi, Punt4
     mov byte ptr[ebx + esi], 32
@@ -449,9 +472,23 @@ Calc_l:
     add Punt4, 1
     mov esi, Punt4
     mov byte ptr[ebx + esi], 32
+    cmp Pivote, 99
+    je Calc_l_final
+    
+    ;add Punt4, 1
+    ;mov esi, Punt4
+    ;movzx eax, byte ptr[ecx + edx+1]
+    ;mov byte ptr[ebx + esi], al
+    ;add Punt4, 1
+    ;mov esi, Punt4
+    ;mov byte ptr[ebx + esi], 32
+    finit
+    jmp Calc_f
+
+Calc_l_final:
     add Punt4, 1
     mov esi, Punt4
-    movzx eax, byte ptr[ecx + edx+1]
+    movzx eax, byte ptr[ecx + edx + 1]
     mov byte ptr[ebx + esi], al
     add Punt4, 1
     mov esi, Punt4
@@ -475,10 +512,19 @@ Calc_f:
     fadd st, st(1)
     fist val1
     mov eax, val1
-    mov byte ptr[ebx + esi+5], al
-    ;add Punt2, 1
-    ;mov esi, Punt2
-    mov byte ptr[ebx + esi+6], 32
+    cmp Pivote, 99
+    je Calc_f_ultimo
+    ;mov byte ptr[ebx + esi+5], al
+    
+    ;mov byte ptr[ebx + esi+6], 32
+    mov valF, eax
+    finit
+    jmp Calc_j
+
+Calc_f_ultimo:
+    mov byte ptr[ebx + esi + 5], al
+
+    mov byte ptr[ebx + esi + 6], 32
     mov valF, eax
     finit
     jmp Calc_j
@@ -499,9 +545,18 @@ Calc_j:
     fadd st, st(1)
     fist val1
     mov eax, val1
+    cmp Pivote, 99
+    je Calc_j_ultimo
+    ;mov byte ptr[ebx + esi+5], al
+    
+    ;mov byte ptr[ebx + esi+6], 32
+    mov valJ, eax
+    finit
+    jmp Calc_d
+
+Calc_j_ultimo:
     mov byte ptr[ebx + esi+5], al
-    ;add Punt3, 1
-    ;mov esi, Punt3
+    
     mov byte ptr[ebx + esi+6], 32
     mov valJ, eax
     finit
@@ -542,6 +597,13 @@ Calc_e:
     add Punt2, 1
     mov esi, Punt2
     mov byte ptr[ebx + esi], 32
+    cmp Pivote, 99
+    je Calc_e_ultimo
+    ;add Punt2, 2
+    finit
+    jmp Calc_h
+
+Calc_e_ultimo:
     add Punt2, 2
     finit
     jmp Calc_h
@@ -580,6 +642,14 @@ Calc_i:
     add Punt3, 1
     mov esi, Punt3
     mov byte ptr[ebx + esi], 32
+    cmp Pivote, 99
+    je Calc_i_ultimo
+    ;add Punt3, 2
+    
+    finit
+    jmp InicioCiclo
+
+Calc_i_ultimo:
     add Punt3, 2
     
     finit
@@ -697,8 +767,13 @@ Digitos1:
 prueba:
     
     mov esi, pruebita
-    movzx ebx, byte ptr[eax+ esi]
+    movzx eax, byte ptr[ebx + esi]
     add pruebita, 1
+    cmp pruebita, 174
+    je pueba2
+    jmp prueba
+
+pueba2:
     jmp prueba
 
 Write:
@@ -715,7 +790,7 @@ Write:
 
     sub esp, 4
     mov edx, esp
-    invoke WriteFile, ebx, StrMemory, 528500, edx, 0
+    invoke WriteFile, ebx, StrMemory, 293499, edx, 0
     add esp, 4
     test eax, eax
     jz fail
