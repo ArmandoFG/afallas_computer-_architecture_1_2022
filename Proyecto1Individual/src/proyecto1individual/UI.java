@@ -7,7 +7,16 @@ package proyecto1individual;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.MemoryImageSource;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -25,6 +34,7 @@ public class UI extends javax.swing.JFrame {
      * Creates new form UI
      */
     Imagen img = new Imagen();
+    
     int x_init;
     int y_init;
     int x_end;
@@ -60,6 +70,7 @@ public class UI extends javax.swing.JFrame {
         Op3 = new javax.swing.JLabel();
         Op2 = new javax.swing.JLabel();
         Op1 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
@@ -217,6 +228,18 @@ public class UI extends javax.swing.JFrame {
         getContentPane().add(Op1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 160, 100, 100));
         Op1.getAccessibleContext().setAccessibleName("Op1");
 
+        jButton3.setBackground(new java.awt.Color(0, 153, 153));
+        jButton3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jButton3.setForeground(new java.awt.Color(255, 255, 255));
+        jButton3.setText("Mostar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 620, 120, 40));
+        jButton3.getAccessibleContext().setAccessibleName("Mostar");
+
         jButton2.setBackground(new java.awt.Color(0, 153, 153));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
@@ -228,7 +251,6 @@ public class UI extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 620, 110, 40));
-        jButton2.getAccessibleContext().setAccessibleName("Zoom");
 
         jButton1.setBackground(new java.awt.Color(0, 153, 153));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -311,6 +333,72 @@ public class UI extends javax.swing.JFrame {
             img.pixelesImagen(imagen.getAbsolutePath(), x_init, y_init, x_end, y_end);
 
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+
+            Image img;
+            File doc = new File("C:\\Users\\arman\\Pictures\\PruebaResultado.txt");
+            String strng="";
+            BufferedReader obj;
+             
+        try {
+            obj = new BufferedReader(new FileReader(doc));
+            
+            strng = obj.readLine();
+            strng = strng.replace("\n", ",");
+            System.out.println(strng);
+            
+            //System.out.println(strng);
+  
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            String[] parts = strng.split(" ");
+            
+            
+           
+            
+            int[] Interpolada = new int[parts.length];
+    
+            Interpolada = Stream.of(parts).mapToInt(Integer::parseInt).toArray();
+            //System.out.println(Interpolada.length);
+            System.out.println(Interpolada.length);
+                    
+            int punto[] = new int[88804];
+            int ind=0;
+            
+            for(int x=0;x<298;x++)
+
+            {
+
+                for(int y=0;y<298;y++)
+
+                {
+                    
+                    punto[ind]=(255<<24)|(Interpolada[ind]<<16)|(Interpolada[ind]<<8)|Interpolada[ind];
+                    ind++;
+                }
+
+            }
+            
+            
+            
+            img=createImage(new MemoryImageSource(298,298,punto,0,298));
+            
+            Image dimg = img.getScaledInstance(298, 298, Image.SCALE_REPLICATE);
+            
+            ImageIcon ImgIcon = new ImageIcon(dimg);
+            
+            Icon icono = new ImageIcon(ImgIcon.getImage().getScaledInstance(298, 298, Image.SCALE_DEFAULT));
+            jLabel4.setIcon(icono);
+            
+            
+            
+            
+            
+    }//GEN-LAST:event_jButton3ActionPerformed
     
     private void CambiarSeleccion(String Selector){
         if(Selector.equals("Op1")){
@@ -461,6 +549,7 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JLabel Op9;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
