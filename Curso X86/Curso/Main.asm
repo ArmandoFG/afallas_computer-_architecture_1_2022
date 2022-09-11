@@ -12,15 +12,21 @@ include /masm32/include/masm32rt.inc
 
 
 .data
-    FileName db "C:/Users/arman/Pictures/prueba.txt", 0
-    FileNameDest db "C:/Users/arman/Pictures/PruebaResultado.txt", 0
+
+    ;Se carga los txt de destino y el que tiene la imagen
+
+    FileName db "C:/Users/arman/Documents/Segundo Semestre 2022/Arqui/Proyecto1Individual/src/proyecto1individual/prueba.txt", 0
+    FileNameDest db "C:/Users/arman/Documents/Segundo Semestre 2022/Arqui/Proyecto1Individual/src/proyecto1individual/PruebaResultado.txt", 0
     ErrorCaption  db "Error!", 0
     ErrorMsg	  db "Cannot open file", 0
     string db '2', 0
 
+    ;Se almacenan dos constantes para los calculos de la interpolación
+
     a1 REAL4 0.666667
     a2 REAL4 0.333333
 
+    ;Punteros a usar para almacenar los datos de la interpolación en memoria
 
     Punt1 DWORD 0
     Punt2 DWORD 596
@@ -34,8 +40,13 @@ include /masm32/include/masm32rt.inc
 
     dataSize dword 65535
 
+    ;Contador de caracteres para escribir en el txt
+    SizeAscii DWORD 0
+
 
 .data?
+
+    ;Variables necesarias para leer el txt
     hFile HANDLE ?
     ihFile HANDLE ?
     hMemory HANDLE ?
@@ -70,7 +81,9 @@ include /masm32/include/masm32rt.inc
 
     
 
+    
 
+    ;Memoria necesaria para guardar los distintos datos para evitar sobreescritura
 .const
     MEMORYSIZE equ 300000
     MEMORYSIZE2 equ 350000
@@ -80,27 +93,35 @@ include /masm32/include/masm32rt.inc
 
 start PROC
     
-    
+    ;Se abre el archivo con los valores de pixeles
 	
     invoke CreateFile, addr FileName, GENERIC_READ, FILE_SHARE_READ,
     NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL
-    .if eax != INVALID_HANDLE_VALUE
+    
     mov hFile, eax
+
+    ;Se aparta memoria para leer los datos del txt
 
     invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE
     mov hMemory, eax
     invoke GlobalLock, hMemory
     mov pMemory, eax
 
+    ;Se aparta memoria para la conversión de los datos de ascii a entero
+
     invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE2
     mov enteroMemory, eax
     invoke GlobalLock, enteroMemory
     mov IMemory, eax
 
+    ;Se aparta memoria para el resultado de la interpolacion
+
     invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE2
     mov ihMemory, eax
     invoke GlobalLock, ihMemory
     mov NewMemory, eax
+
+    ;Se aparta memoria para almacenar los datos de entero a ascii
 
     invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE3
     mov sihMemory, eax
@@ -109,7 +130,7 @@ start PROC
 
     
 
- 
+    ;Se lee el archivo txt con los pixeles
     
     invoke ReadFile, hFile, pMemory, MEMORYSIZE - 1, addr ReadSize, NULL
 
@@ -126,18 +147,11 @@ start PROC
     
     jmp ConvertToInt
 
-    invoke MessageBox, NULL, pMemory, addr FileName, MB_OK
-    invoke GlobalUnlock, pMemory
-    invoke GlobalFree, hMemory
-    invoke CloseHandle, hFile
-    .else
-    invoke MessageBox, NULL, addr ErrorMsg, addr ErrorCaption, MB_OK
 
-    .endif
-
-    invoke ExitProcess, NULL
 
 ConvertToInt:
+
+    ;Contador para conocer la cantidad de digitos del numero
 
     add contador, 1
     add eax, 1
@@ -145,10 +159,10 @@ ConvertToInt:
     movzx ebx, byte ptr[eax]
     sub ebx, 48
          
-    cmp byte ptr[eax + 1], 36
+    cmp byte ptr[eax + 1], 36   ;Se compara para saber si se terminó los datos a conertir
     je Convert
     
-    cmp byte ptr[eax+1], 32
+    cmp byte ptr[eax+1], 32 ;Compara para saber si encontró un espacio
     jne ConvertToInt
     je Convert
 
@@ -156,6 +170,9 @@ ConvertToInt:
     jmp ConvertToInt
 
 Convert:
+
+    ;Compara para saber la cantidad de digitos del numero
+
     add eax, 1
     cmp contador, 1
     je Conver1Digit
@@ -164,6 +181,8 @@ Convert:
     cmp contador, 3
     je Conver3Digit
 
+;Para convertir los numeros si es de 1 solo digito solo se debe convertir a entero restabdo 48 y se
+;guarda en memoria
 
 Conver1Digit:
     add contadorInt, 1
@@ -179,6 +198,10 @@ Conver1Digit:
     cmp byte ptr[eax], 36
     je IniciarAlgoritmo
     jmp ConvertToInt
+
+
+;Para convertir los numeros si es de 2 digitos, se resta 48 al primer valor y se multiplica por 10 
+;al segundo digito tambien se le resta 48 pero se suma al resultado anterior
 
 Conver2Digit:
     add contadorInt, 1
@@ -204,6 +227,10 @@ Conver2Digit:
 
     je IniciarAlgoritmo
     jmp ConvertToInt
+
+;Para convertir los numeros si es de 3 digitos, se resta 48 al primer valor y se multiplica por 10 
+;al segundo digito tambien se le resta 48 pero se suma al resultado anterior
+;A la suma de los numeros pasados se les multiplica por 10 y al tercer digito se conviertr y se suma a este numero
 
 Conver3Digit:
     add contadorInt, 1
@@ -237,13 +264,15 @@ Conver3Digit:
     jmp ConvertToInt
 
 
+;Inicio de la interpolación
+
 IniciarAlgoritmo:
     mov ecx, IMemory
     sub ecx, contadorInt
     
     ;mov eax, offset NewMemory
     ;mov NewMemory, eax
-    mov Px, 0
+    mov Px, 0       ;Se colocan los punteros para recorrer la matriz
     mov Py, 100
 
     mov ebx, NewMemory
@@ -255,11 +284,11 @@ InicioCiclo:
     add Py, 1
     
 
-    add Pivote, 1
+    add Pivote, 1   ;El pivote funciona para conocer cuando llegamos al fin de una fila y pasar a la siguiente
    
-    cmp Py, 10000
+    cmp Py, 10000   ;Esto nos indica que hemos analizado todos los valores
     je Fin
-    cmp Pivote, 100
+    cmp Pivote, 100 ;Indica que se debe pasar de fila
     je MoverPunteros
     
     jmp Calc_a
@@ -267,8 +296,11 @@ InicioCiclo:
 MoverPunteros:
     add Px, 1
     add Py, 1
+
+    ;Al llegar al fin de una fila se deben mover los punteros 1192 posiciones para 
+    ;no caer encima de los datos anteriores
    
-    add Punt1, 1192
+    add Punt1, 1192 
     add Punt2, 1192
     add Punt3, 1192
     add Punt4, 1192
@@ -290,24 +322,24 @@ Calc_a:
     mov byte ptr[ebx + esi], ' '
     add Punt1, 1
     mov esi, Punt1
-        
-    fld a1
+       
+    fld a1                                  ;Esta instrucción nos carga el valor decimal al stack(0)
     movzx eax, byte ptr[ecx+edx]
     mov val1, eax
-    fimul val1
-    fld a2
+    fimul val1                              ;Acá se multiplica el valor del pixel por el valor del stack(0)
+    fld a2                                  ;Esta instrucción nos carga el valor decimal al stack(1)
     movzx eax, byte ptr[ecx + edx+1]
     mov val1, eax
-    fimul val1
-    fadd st, st(1)
-    fist val1
+    fimul val1                              ;Acá se multiplica el valor del pixel por el valor del stack(1)
+    fadd st, st(1)                          ;Se suma el valor del stack(0) y stack(1)
+    fist val1                               ;Este redondea la suma del stack(0) y lo almacena en val1
     mov eax, val1
     mov byte ptr[ebx + esi], al
     movzx eax, byte ptr[ebx + esi]
     add Punt1, 1
     mov esi, Punt1
     mov byte ptr[ebx + esi], ' '
-    finit
+    finit                                   ;Se limpia el stack
     jmp Calc_b
     
 
@@ -667,6 +699,8 @@ Fin:
     
     jmp Fin
 
+    ;Convertir los enteros a su valor en  ascii
+
 IntoString:
     mov esi, PtrStr
     mov eax, StrMemory
@@ -676,6 +710,8 @@ IntoString:
     sub StrMemory, edi
 
     jmp BuscarEspacio
+
+        ;Se buca un espacio que nos indique cuando escontró un valor
 
 BuscarEspacio:
     sub edi, 1
@@ -694,6 +730,9 @@ BuscarEspacio:
 salto:
     jmp ConDigitos
 
+
+        ;Comparando el valor con 99 o 9 sabremos si es de 1, 2 o 3 digitos
+
 ConDigitos:
     cmp esi, 0
     je BuscarEspacio
@@ -703,6 +742,10 @@ ConDigitos:
     cmp byte ptr[ebx + edi+1], 9
     jg Digitos2
     jmp Digitos1
+
+
+    ;Para convertir a ascii los valores debemos dividirlos entre 10 y ir convirtiendo la parte decimal
+    ;Para convertir debemos sumar por 48
 
 Digitos3:
     mov esi, -1
@@ -731,6 +774,7 @@ Digitos3:
     sub eax, 1
     mov byte ptr[eax], ' '
     sub eax, 1
+    add SizeAscii, 4
     jmp BuscarEspacio
 
 
@@ -751,6 +795,7 @@ Digitos2:
     sub eax, 1
     mov byte ptr[eax], ' '
     sub eax, 1
+    add SizeAscii, 3
     jmp BuscarEspacio
 
 Digitos1:
@@ -761,6 +806,7 @@ Digitos1:
     sub eax,1
     mov byte ptr[eax], ' '
     sub eax,1
+    add SizeAscii, 2
     jmp BuscarEspacio
 
 
@@ -778,9 +824,12 @@ pueba2:
 
 Write:
    
+    sub SizeAscii, 1
     add eax, 2
     mov StrMemory, eax
     mov eax, StrMemory
+
+    ;Se abre el archivo txt donde se quiere guardar los datos
     
     invoke CreateFile, addr FileNameDest, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL
     cmp eax, INVALID_HANDLE_VALUE
@@ -790,9 +839,15 @@ Write:
 
     sub esp, 4
     mov edx, esp
-    invoke WriteFile, ebx, StrMemory, 293499, edx, 0
+    invoke WriteFile, ebx, StrMemory, SizeAscii, edx, 0 ;Se escriben los datos al txt
     add esp, 4
     test eax, eax
+
+    invoke GlobalUnlock, pMemory
+    invoke GlobalUnlock, StrMemory
+    invoke GlobalFree, hMemory
+    invoke CloseHandle, hFile
+    
     jz fail
 
 ok:
@@ -801,17 +856,15 @@ ok:
 
 done:
     pop ebx
-    ret
+    invoke ExitProcess, NULL
 
 fail:
     invoke  CloseHandle, ebx
+    invoke ExitProcess, NULL
 
 openFail:
     mov eax, -1
-   
-    
-    
-    
+  
 
 start endp
 end start
