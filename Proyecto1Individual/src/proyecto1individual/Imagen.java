@@ -77,21 +77,33 @@ public class Imagen {
                 pixels[i][j] =  buffImage.getRGB( i, j );
             } 
         }
-            txt = new File("C:\\Users\\arman\\Documents\\Segundo Semestre 2022\\Arqui\\Proyecto1Individual\\src\\proyecto1individual\\PixelesIMG.txt");
+            txt = new File("C:\\Users\\arman\\Documents\\Segundo Semestre 2022\\Arqui\\Proyecto1Individual\\src\\proyecto1individual\\prueba.txt");
             //System.out.print(txt.getAbsolutePath());
             fichero = new FileWriter(txt);
             BufferedWriter bw = new BufferedWriter(new FileWriter(txt));
             bw.write("");
             bw.close();
-            
+            int r;
+            String r_str="";
             pw = new PrintWriter(fichero);
             
-            for(int i = init_x; i < end_x;i++){
+   
+            
             for (int j = init_y; j < end_y;j++){
-                int r = (pixels[i][j]>>16) & 0xff;
-                pw.println(r);
+                for(int i = init_x; i < end_x;i++){
+            
+                
+                
+                
+                r = (pixels[i][j]>>16) & 0xff;
+                r_str = r_str + String.valueOf(r) + " ";
+               
+                
             } 
+            
         }
+            pw.println(r_str);
+            
             fichero.close();
            
 >>>>>>> Interfaz
