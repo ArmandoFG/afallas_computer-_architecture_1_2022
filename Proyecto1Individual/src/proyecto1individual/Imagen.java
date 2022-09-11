@@ -51,7 +51,7 @@ public class Imagen {
                 pixels[i][j] =  buffImage.getRGB( i, j );
             } 
         }
-            txt = new File("C:\\Users\\arman\\Pictures\\prueba.txt");
+            txt = new File("C:\\Users\\arman\\Documents\\Segundo Semestre 2022\\Arqui\\Proyecto1Individual\\src\\proyecto1individual\\prueba.txt");
             //System.out.print(txt.getAbsolutePath());
             fichero = new FileWriter(txt);
             BufferedWriter bw = new BufferedWriter(new FileWriter(txt));
@@ -61,13 +61,11 @@ public class Imagen {
             String r_str="";
             pw = new PrintWriter(fichero);
             
-            System.out.println("init_x: "+ init_x);
-            System.out.println("end_x: "+ end_x);
-            System.out.println("init_y: "+ init_y);
-            System.out.println("end_y: "+ end_y);
+   
             
-            for(int i = init_x; i < end_x;i++){
             for (int j = init_y; j < end_y;j++){
+                for(int i = init_x; i < end_x;i++){
+            
                 
                 
                 

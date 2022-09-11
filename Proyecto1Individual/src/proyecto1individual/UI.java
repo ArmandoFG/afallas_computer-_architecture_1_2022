@@ -232,13 +232,13 @@ public class UI extends javax.swing.JFrame {
         jButton3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jButton3.setForeground(new java.awt.Color(255, 255, 255));
         jButton3.setText("Mostar");
+        jButton3.setEnabled(false);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 620, 120, 40));
-        jButton3.getAccessibleContext().setAccessibleName("Mostar");
 
         jButton2.setBackground(new java.awt.Color(0, 153, 153));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -262,8 +262,6 @@ public class UI extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 620, 110, 40));
-
-        jLabel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 160, 400, 400));
         jLabel4.getAccessibleContext().setAccessibleName("FotoZoom");
 
@@ -330,14 +328,25 @@ public class UI extends javax.swing.JFrame {
     }//GEN-LAST:event_OpcionesIMG
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-            img.pixelesImagen(imagen.getAbsolutePath(), x_init, y_init, x_end, y_end);
+            jButton3.setEnabled(true);
+        img.pixelesImagen(imagen.getAbsolutePath(), x_init, y_init, x_end, y_end);
+            Runtime runTime = Runtime.getRuntime();
+            
+            String executablePath = "C:\\Users\\arman\\Documents\\Segundo Semestre 2022\\Arqui\\Proyecto1Individual\\src\\proyecto1individual\\Curso.exe";
+
+        try {
+            Process process = runTime.exec(executablePath);
+                    
+                    } catch (IOException ex) {
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 
             Image img;
-            File doc = new File("C:\\Users\\arman\\Pictures\\PruebaResultado.txt");
+            File doc = new File("C:\\Users\\arman\\Documents\\Segundo Semestre 2022\\Arqui\\Proyecto1Individual\\src\\proyecto1individual\\PruebaResultado.txt");
             String strng="";
             BufferedReader obj;
              
@@ -346,7 +355,7 @@ public class UI extends javax.swing.JFrame {
             
             strng = obj.readLine();
             strng = strng.replace("\n", ",");
-            System.out.println(strng);
+            
             
             //System.out.println(strng);
   
@@ -364,7 +373,6 @@ public class UI extends javax.swing.JFrame {
     
             Interpolada = Stream.of(parts).mapToInt(Integer::parseInt).toArray();
             //System.out.println(Interpolada.length);
-            System.out.println(Interpolada.length);
                     
             int punto[] = new int[88804];
             int ind=0;
@@ -387,12 +395,16 @@ public class UI extends javax.swing.JFrame {
             
             img=createImage(new MemoryImageSource(298,298,punto,0,298));
             
+            
+            
             Image dimg = img.getScaledInstance(298, 298, Image.SCALE_REPLICATE);
+            
             
             ImageIcon ImgIcon = new ImageIcon(dimg);
             
             Icon icono = new ImageIcon(ImgIcon.getImage().getScaledInstance(298, 298, Image.SCALE_DEFAULT));
             jLabel4.setIcon(icono);
+            
             
             
             
