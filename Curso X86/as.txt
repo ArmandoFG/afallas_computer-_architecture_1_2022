@@ -1,0 +1,56 @@
+.386
+.model flat, stdcall
+option casemap : none
+
+include /masm32/include/windows.inc
+include /masm32/include/user32.inc
+include /masm32/include/kernel32.inc
+
+includelib /masm32/lib/user32.lib
+includelib /masm32/lib/kernel32.lib
+
+
+.data
+    FileName db "C:/Users/arman/Pictures/prueba.txt", 0
+    ErrorCaption  db "Error!", 0
+    ErrorMsg	  db "Cannot open file", 0
+
+.data?
+    hFile HANDLE ?
+    hMemory HANDLE ?
+    pMemory DWORD ?
+    ReadSize DWORD ?
+
+.const
+    MEMORYSIZE equ 65535
+
+.code
+
+start PROC
+	
+    invoke CreateFile, addr FileName, GENERIC_READ, FILE_SHARE_READ,
+    NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL
+    .if eax != INVALID_HANDLE_VALUE
+    mov hFile, eax
+
+    invoke GlobalAlloc, GMEM_MOVEABLE or GMEM_ZEROINIT, MEMORYSIZE
+    mov hMemory, eax
+    invoke GlobalLock, hMemory
+    mov pMemory, eax
+
+    invoke ReadFile, hFile, pMemory, MEMORYSIZE - 1, addr ReadSize, NULL
+    invoke MessageBox, NULL, pMemory, addr FileName, MB_OK
+
+    invoke GlobalUnlock, pMemory
+    invoke GlobalFree, hMemory
+    invoke CloseHandle, hFile
+    .else
+    invoke MessageBox, NULL, addr ErrorMsg, addr ErrorCaption, MB_OK
+
+    .endif
+
+    invoke ExitProcess, NULL
+
+
+start endp
+end start
